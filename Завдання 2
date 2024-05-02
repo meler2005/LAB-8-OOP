@@ -1,0 +1,45 @@
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Шлях до файлу f
+        string filePath = "C:\\Users\\makar\\source\\repos\\ООП\\f.txt";
+
+        // Читання компонентів файлу та ініціалізація змінних для обчислень
+        string[] lines = File.ReadAllLines(filePath); // Зчитуємо усі рядки з файлу
+        double[] components = Array.ConvertAll(lines, double.Parse); // Конвертуємо рядки у масив чисел
+        double maxComponent = double.MinValue; // Ініціалізуємо максимальну компоненту
+        double minEvenComponent = double.MaxValue; // Ініціалізуємо мінімальну компоненту з парним номером
+        double maxAbsOddComponent = double.MinValue; // Ініціалізуємо максимальну за модулем компоненту з непарним номером
+        double sumOfMaxAndMin = 0; // Ініціалізуємо суму максимальної та мінімальної компонент
+        double firstComponent = components[0]; // Зберігаємо першу компоненту
+        double lastComponent = components[components.Length - 1]; // Зберігаємо останню компоненту
+
+        // Обчислення значень
+        foreach (int i in Enumerable.Range(0, components.Length))
+        {
+            double currentComponent = components[i]; // Поточна компонента
+            if (currentComponent > maxComponent) // Порівнюємо з максимальною
+                maxComponent = currentComponent; // Оновлюємо максимальну
+
+            if (i % 2 == 0 && currentComponent < minEvenComponent) // Якщо номер парний і компонента менша за поточний мінімум
+                minEvenComponent = currentComponent; // Оновлюємо мінімальну для парних номерів
+
+            if (i % 2 != 0 && Math.Abs(currentComponent) > maxAbsOddComponent) // Якщо номер непарний і компонента за модулем більша за поточний максимум
+                maxAbsOddComponent = Math.Abs(currentComponent); // Оновлюємо максимальну за модулем для непарних номерів
+
+            if (currentComponent == maxComponent || currentComponent == minEvenComponent) // Якщо поточна компонента дорівнює максимальній або мінімальній для парних номерів
+                sumOfMaxAndMin += currentComponent; // Додаємо поточну компоненту до суми
+        }
+
+        // Виведення результатів
+        Console.WriteLine("Найбільше значення компонент: " + maxComponent); // Виводимо максимальне значення
+        Console.WriteLine("Найменше значення компонент з парними номерами: " + minEvenComponent); // Виводимо мінімальне значення для парних номерів
+        Console.WriteLine("Найбільше значення модулів компонент з непарними номерами: " + maxAbsOddComponent); // Виводимо максимальне значення за модулем для непарних номерів
+        Console.WriteLine("Сума найбільшого і найменшого значень компонент: " + sumOfMaxAndMin); // Виводимо суму максимального і мінімального значень
+        Console.WriteLine("Різниця першої і останньої компонент файлу: " + (lastComponent - firstComponent)); // Виводимо різницю першої і останньої компонент
+    }
+}
