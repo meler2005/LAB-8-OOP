@@ -1,0 +1,90 @@
+using System;
+using System.IO;
+using System.Text;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Встановлення кодування для коректного відображення українських символів
+        Console.OutputEncoding = Encoding.UTF8;
+
+        // Шлях до каталогу
+        string PathLab08 = @"D:\OOP_lab008";
+
+        // Перевірка наявності каталогу та створення, якщо він не існує
+        if (!Directory.Exists(PathLab08))
+        {
+            Directory.CreateDirectory(PathLab08);
+            Console.WriteLine($"Каталог '{PathLab08}' успішно створено на диску D");
+        }
+
+        // Масив назв підкаталогів
+        string[] subdirectories = { "KN1-B22", "Makarenko", "Sources", "Reports", "Texts" };
+
+        // Перевірка наявності та створення підкаталогів
+        foreach (string subdirectory in subdirectories)
+        {
+            string dirPath = Path.Combine(PathLab08, subdirectory);
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+                Console.WriteLine($"Каталог '{subdirectory}' успішно створено на диску D");
+            }
+        }
+
+        // Копіювання вмісту певних підкаталогів до каталогу Makarenko
+        for (int i = 2; i < subdirectories.Length; i++)
+        {
+            string sourceDirName = Path.Combine(PathLab08, subdirectories[i]);
+            string destDirName = Path.Combine(PathLab08, "Makarenko", subdirectories[i]);
+
+            if (Directory.Exists(destDirName))
+            {
+                Console.WriteLine($"Каталог '{subdirectories[i]}' вже існує в каталозі Makarenko");
+            }
+            else
+            {
+                Directory.CreateDirectory(destDirName);
+                DirectoryInfo dirInfo = new DirectoryInfo(sourceDirName);
+                FileInfo[] files = dirInfo.GetFiles();
+
+                foreach (FileInfo file in files)
+                {
+                    string tempPath = Path.Combine(destDirName, file.Name);
+                    file.CopyTo(tempPath, false);
+                }
+                Console.WriteLine($"Каталог '{subdirectories[i]}' успішно скопійовано в каталог Makarenko.");
+            }
+        }
+
+        // Переміщення каталогу Makarenko в інший підкаталог
+        string sourceDir = Path.Combine(PathLab08, "Makarenko");
+        string destDir = Path.Combine(Path.Combine(PathLab08, "KN1-B22"), "Makarenko");
+        Directory.Move(sourceDir, destDir);
+
+        // Створення текстового файлу з інформацією про каталог
+        string textsDirectory = @"D:\OOP_lab008\KN1-B22\Makarenko\Texts";
+        if (Directory.Exists(textsDirectory))
+        {
+            DirectoryInfo dirInfo = new DirectoryInfo(textsDirectory);
+            string filePath = Path.Combine(textsDirectory, "dirinfo.txt");
+
+            using (StreamWriter writer = File.CreateText(filePath))
+            {
+                writer.WriteLine($"Повне імя каталогу {dirInfo.FullName}:");
+                writer.WriteLine($"Дата створення {dirInfo.CreationTime}");
+                writer.WriteLine($"Атрибути: {dirInfo.Attributes}");
+            }
+            Console.WriteLine($"Текстовий файл dirinfo.txt успішно створено в каталозі {textsDirectory}");
+        }
+
+        // Видалення каталогу та його підкаталогів
+        if (Directory.Exists(PathLab08))
+        {
+            Console.ReadLine(); // Затримка перед видаленням каталогу
+            Directory.Delete(PathLab08, true);
+            Console.WriteLine($"Каталог '{PathLab08}' та усі його підкаталоги були видалені");
+        }
+    }
+}
